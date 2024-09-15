@@ -1,19 +1,20 @@
 package com.example.web;
 
+import com.example.web.service.EmailService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+import java.io.IOException;
+
+
 @SpringBootApplication
 public class WebApplication {
-	@RequestMapping("/")
-	public String home() {
-		return "Hello World!";
-	}
+
+	private EmailService emailService;
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
 	}
+
 
 }
