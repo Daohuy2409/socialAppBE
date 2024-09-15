@@ -1,9 +1,7 @@
 package com.example.web.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,12 +12,13 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "UserInfo")
+@Table(name = "userinfo")
 public class UserInfo {
     @Id
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "firstName")
+    @Column(name = "firstName", nullable = false)
     private String firstName;
 
     @Column(name = "lastName")

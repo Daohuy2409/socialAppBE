@@ -21,11 +21,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account addAccount(String username, String password) {
-        Account account = new Account();
-        account.setUsername(username);
-        account.setPassword(password);
-        return accountRepository.save(account);
+    public Boolean addAccount(String username, String password) {
+        try {
+            Account account = new Account();
+            account.setUsername(username);
+            account.setPassword(password);
+            accountRepository.save(account);
+            return true;
+        } catch (Exception e) {
+            System.out.println("This is error: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
