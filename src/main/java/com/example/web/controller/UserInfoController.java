@@ -23,10 +23,17 @@ public class UserInfoController {
     private AccountService accountService;
 
     private ConcurrentHashMap<String, OtpDetail> otpStore = new ConcurrentHashMap<>();
-    @GetMapping("/sendOtpToUser")
-    public Response<?> sendOtpToUser(@RequestBody String name, String username) {
+    @PostMapping("/sendOtpToUser")
+    public Response<?> sendOtpToUser(@RequestParam String name, String username) {
+        // check if user already exists
+        if (!accountService.findAccountByUsername(username) ) {
+            return new Response<>(EHttpStatus.BAD_REQUEST, "Username already exists!");
+        }
+        //check if user received otp in last 5 minutes
+        if (otpStore.containsKey(username) && otpStore.get(username).getExpiryTime().isAfter(LocalDateTime.now())) {
+            return new Response<>(EHttpStatus.BAD_REQUEST, "OTP already sent. Please verify!");
+        }
         //generate otp
-
         Random random = new Random();
         int otp = random.nextInt(900000) + 100000; // Generate 6-digit OTP
         LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(5); // Set expiry time to 5 minutes from now
@@ -38,8 +45,8 @@ public class UserInfoController {
 
 
 
-    @GetMapping("/verifyByOtp")
-    public Response<?> verifyByOtp(@RequestBody String username, String otp) {
+    @PostMapping("/verifyByOtp")
+    public Response<?> verifyByOtp(@RequestParam String username, String otp) {
         if (!otpStore.containsKey(username)) {
             return new Response<>(EHttpStatus.OK, "OTP not found");
         }
@@ -56,8 +63,8 @@ public class UserInfoController {
         return new Response<>(EHttpStatus.OK, "OTP verified successfully!");
     }
 
-    @GetMapping("/registerUser")
-    public Response<?> addUser(@RequestBody UserInfo userInfo, String password) {
+    @PostMapping("/registerUser")
+    public Response<?> addUser(@RequestParam UserInfo userInfo, String password) {
 
         userInfoService.saveUserInfo(userInfo);
         // add account

@@ -27,4 +27,9 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(password);
         return accountRepository.save(account);
     }
+
+    @Override
+    public Boolean findAccountByUsername(String username) {
+        return accountRepository.findAccountByUsername(username) == null;
+    }
 }

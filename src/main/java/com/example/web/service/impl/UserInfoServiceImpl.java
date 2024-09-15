@@ -34,14 +34,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 //    public void regiterUser
 
     @Override
-    public boolean verifyEmailByOtp(String username, String otp) {
-        //verify otp
-        if (otp.equals("123456")) {
-            return true;
-        }
-        return false;
-    }
-    @Override
     public void saveUserInfo(UserInfo userInfo) {
         addUserInfo(userInfo);
     }
