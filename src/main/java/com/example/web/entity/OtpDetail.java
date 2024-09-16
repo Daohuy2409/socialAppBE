@@ -1,4 +1,5 @@
 package com.example.web.entity;
+
 import java.time.LocalDateTime;
 
 public class OtpDetail {

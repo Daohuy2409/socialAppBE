@@ -38,4 +38,9 @@ public class AccountServiceImpl implements AccountService {
     public Boolean findAccountByUsername(String username) {
         return accountRepository.findAccountByUsername(username) == null;
     }
+
+    @Override
+    public void changePassword(String username, String newPassword) {
+        accountRepository.changePass(username, newPassword);
+    }
 }

@@ -10,4 +10,6 @@ public interface AccountService {
     Boolean addAccount(String username, String password);
 
     Boolean findAccountByUsername(String username);
+
+    void changePassword(String username, String newPassword);
 }

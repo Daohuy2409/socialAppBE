@@ -29,7 +29,7 @@ public class UserInfoController {
     @PostMapping("/sendOtpToUser")
     public Response<?> sendOtpToUser(@RequestParam String name, String username) {
         // check if user already exists
-        if (!accountService.findAccountByUsername(username) ) {
+        if (!accountService.findAccountByUsername(username)) {
             return new Response<>(EHttpStatus.BAD_REQUEST, "Username already exists!");
         }
 
@@ -63,11 +63,11 @@ public class UserInfoController {
         OtpDetail otpDetail = otpStore.get(username);
         if (otpDetail.getExpiryTime().isBefore(LocalDateTime.now())) {
             otpStore.remove(username);
-            return new Response<>(EHttpStatus.BAD_REQUEST,"OTP expired!");
+            return new Response<>(EHttpStatus.BAD_REQUEST, "OTP expired!");
         }
 
         if (!otpDetail.getOtp().equals(otp)) {
-            return new Response<>(EHttpStatus.BAD_REQUEST,"Invalid OTP!");
+            return new Response<>(EHttpStatus.BAD_REQUEST, "Invalid OTP!");
         }
 
         otpStore.remove(username); // Remove OTP after verification
