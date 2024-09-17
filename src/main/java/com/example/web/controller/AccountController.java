@@ -71,4 +71,8 @@ public class AccountController {
         accountService.changePassword(username, newPassword);
         return new Response<>(EHttpStatus.OK, "Change password successfully");
     }
+    @GetMapping("/getAccounts")
+    public Response<?> getAccounts() {
+        return new Response<>(EHttpStatus.OK, accountService.getAllAccounts());
+    }
 }

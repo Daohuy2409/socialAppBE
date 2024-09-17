@@ -1,0 +1,34 @@
+use social_network_data;
+CREATE TABLE UserInfo (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    firstName VARCHAR(255) ,
+    lastName VARCHAR(255) ,
+    contactIdentify VARCHAR(255) UNIQUE ,
+    address VARCHAR(255),
+    dateOfBirth DATE,
+    sex VARCHAR(10)
+);
+
+CREATE TABLE Account (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    foreign key (username) references UserInfo(contactIdentify)
+);
+
+INSERT INTO UserInfo (firstName, lastName, contactIdentify, address, dateOfBirth, sex)
+VALUES
+('John', 'Doe', 'john.doe@example.com', '123 Main St', '1990-05-15', 'Male'),
+('Jane', 'Smith', 'jane.smith@example.com', '456 Oak St', '1985-07-20', 'Female'),
+('Emily', 'Johnson', 'emily.johnson@example.com', '789 Pine St', '1992-11-30', 'Female'),
+('Michael', 'Brown', 'michael.brown@example.com', '101 Maple St', '1988-03-22', 'Male'),
+('Sarah', 'Davis', 'sarah.davis@example.com', '202 Birch St', '1995-09-10', 'Female');
+
+
+INSERT INTO Account (username, password)
+VALUES
+('john.doe@example.com', 'password123'),
+('jane.smith@example.com', 'qwerty456'),
+('emily.johnson@example.com', 'letmein789'),
+('michael.brown@example.com', 'abc123xyz'),
+('sarah.davis@example.com', 'safepass987');

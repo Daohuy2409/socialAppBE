@@ -43,4 +43,9 @@ public class AccountServiceImpl implements AccountService {
     public void changePassword(String username, String newPassword) {
         accountRepository.changePass(username, newPassword);
     }
+
+    @Override
+    public Account[] getAllAccounts() {
+        return accountRepository.findAll().toArray(new Account[0]);
+    }
 }
