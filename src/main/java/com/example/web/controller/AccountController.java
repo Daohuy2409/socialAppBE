@@ -19,7 +19,8 @@ public class AccountController {
     @Autowired private AccountService accountService;
     @Autowired private EmailService emailService;
 
-    private ConcurrentHashMap<String, OtpDetail> otpStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, OtpDetail> otpStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> changePassState = new ConcurrentHashMap<>();
 
     @GetMapping("/login")
     public Response<?> login(@RequestParam String username, String password) {
@@ -30,10 +31,10 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/forgotPass")
+    @GetMapping("/forgotPass")
     public Response<?> forgotPass(@RequestParam String username) {
         if (accountService.findAccountByUsername(username)) {
-            return new Response<>(EHttpStatus.BAD_REQUEST, "Username does not exist!");
+            return new Response<>(EHttpStatus.INCORRECT_INFORMATION, "Username does not exist!");
         }
         //check if user received otp in last 5 minutes
         if (otpStore.containsKey(username) && otpStore.get(username).getExpiryTime().isAfter(LocalDateTime.now())) {
@@ -42,7 +43,7 @@ public class AccountController {
         //generate otp
         Random random = new Random();
         int otp = random.nextInt(900000) + 100000; // Generate 6-digit OTP
-        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(5); // Set expiry time to 5 minutes from now
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(1); // Set expiry time to 1 minutes from now
         otpStore.put(username, new OtpDetail(String.valueOf(otp), expiryTime));
 
         // send otp to user
@@ -53,11 +54,15 @@ public class AccountController {
         } catch (Exception e) {
             System.out.println("This is error: " + e.getMessage());
         }
+        changePassState.put(username, "OTP_SENT");
         return new Response<>(EHttpStatus.OK, "OTP sent to your email. Please verify to reset password.");
     }
 
-    @PostMapping("/resetPass")
-    public Response<?> resetPass(@RequestParam String username, String otp, String newPassword) {
+    @GetMapping("/checkOtp")
+    public Response<?> checkOtp(@RequestParam String username, String otp) {
+        if (!changePassState.containsKey(username) || !changePassState.get(username).equals("OTP_SENT")) {
+            return new Response<>(EHttpStatus.BAD_REQUEST, "You must give email to send OTP.");
+        }
         if (!otpStore.containsKey(username)) {
             return new Response<>(EHttpStatus.BAD_REQUEST, "OTP not found");
         }
@@ -66,9 +71,18 @@ public class AccountController {
             return new Response<>(EHttpStatus.BAD_REQUEST, "OTP has expired. Please request a new one.");
         }
         if (!otpDetail.getOtp().equals(otp)) {
-            return new Response<>(EHttpStatus.BAD_REQUEST, "Invalid OTP");
+            return new Response<>(EHttpStatus.INCORRECT_INFORMATION, "Invalid OTP");
+        }
+        changePassState.put(username, "OTP_VERIFIED");
+        return new Response<>(EHttpStatus.OK, "Verify otp successfully!");
+    }
+    @GetMapping("/resetPass")
+    public Response<?> resetPass(@RequestParam String username, String newPassword) {
+        if (!changePassState.containsKey(username) || !changePassState.get(username).equals("OTP_VERIFIED")) {
+            return new Response<>(EHttpStatus.BAD_REQUEST, "You must verify OTP first.");
         }
         accountService.changePassword(username, newPassword);
+        changePassState.remove(username);
         return new Response<>(EHttpStatus.OK, "Change password successfully");
     }
     @GetMapping("/getAccounts")
